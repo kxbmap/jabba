@@ -57,7 +57,8 @@ function jabba
     }
     rm -Force `$fd3
 }
-"@ > $jabbaHome/jabba.ps1
+"@  | % { [Text.Encoding]::UTF8.GetBytes($_) } `
+    | Set-Content -Path $jabbaHome/jabba.ps1 -Encoding Byte
 
 $sourceJabba="if (Test-Path `"$jabbaHome\jabba.ps1`") { . `"$jabbaHome\jabba.ps1`" }"
 
@@ -69,7 +70,9 @@ if (-not $(Test-Path $profile))
 if ("$(cat $profile | Select-String "\\jabba.ps1")" -eq "")
 {
     echo "Adding source string to $profile"
-    "`n$sourceJabba`n" >> "$profile"
+    "`n$sourceJabba`n" `
+        | % { [Text.Encoding]::UTF8.GetBytes($_) } `
+        | Add-Content -Path "$profile" -Encoding Byte
 }
 else
 {
